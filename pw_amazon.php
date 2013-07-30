@@ -115,10 +115,14 @@ if(!class_exists('PW_Amazon')){
             $regexps[] = '/(?P<atag><a .*?href="' . $regdomain . '(?P<urlname>\S+)\/gp\/product\/' . $regasin;
             $regexps[] = '/(?P<atag><a .*?href="' . $regdomain . 'gp\/product\/' . $regasin;
             $regexps[] = '/(?P<atag><iframe [^>]*?src="' . $regdomain . '.*?asins=(?P<asin>[A-Za-z0-9]{10})[^>]*?>).*?<\/iframe>/s';
+            $chkignore = 'data-pw-amazon-ignore="true"';
 
             foreach($regexps as $regexp){
                 if($num = preg_match_all($regexp, $content, $res)){
                     for($i = 0; $i < $num; ++$i){
+                        if(strpos($res['atag'][$i], $chkignore)){
+                            continue;
+                        }
                         $tmp = array();
                         $tmp['domain'] = $res['domain'][$i];
                         if($tmp['domain'] == 'amazon.jp'){
