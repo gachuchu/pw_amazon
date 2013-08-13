@@ -180,7 +180,16 @@ if(!class_exists('libpw_Amazon_API')){
 
             // クリティカルセクションで挟む
             if($this->critical->start($wait)){
-                $xml = @file_get_contents($request);
+                $curl = curl_init($request);
+                curl_setopt($curl, CURLOPT_TIMEOUT, 60);
+                curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+                curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
+                curl_setopt($curl, CURLOPT_MAXREDIRS, 5);
+                curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($curl, CURLOPT_AUTOREFERER, true);
+                $xml = curl_exec($curl);
+                curl_close($curl);
+                //$xml = @file_get_contents($request);
                 if($xml !== false){
                     $this->cache->set($cache_key, $xml);
                 }
