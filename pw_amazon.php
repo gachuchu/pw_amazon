@@ -36,8 +36,9 @@ if(!class_exists('PW_Amazon')){
      *********************************************************************/
     class PW_Amazon extends libpw_Plugin_Substance {
         //---------------------------------------------------------------------
-        const UNIQUE_KEY = 'PW_Amazon';
-        const CLASS_NAME = 'PW_Amazon';
+        const UNIQUE_KEY  = 'PW_Amazon';
+        const CLASS_NAME  = 'PW_Amazon';
+        const ENCRYPT_KEY = '';
 
         //---------------------------------------------------------------------
         const RES_GROUP = 'responce_group';
@@ -63,7 +64,8 @@ if(!class_exists('PW_Amazon')){
                                                         libpw_Amazon_API::ACCESS_KEY        => '',
                                                         libpw_Amazon_API::PRIVATE_KEY       => '',
                                                         self::RES_GROUP                    => 'Images,ItemAttributes,OfferSummary',
-                                                        )
+                                                        ),
+                                                    self::ENCRYPT_KEY
                                                     );
 
             // api作成
@@ -377,10 +379,13 @@ if(!class_exists('PW_Amazon')){
                     $lowprice->FormattedPrice .= '(used)';
                 }
             }
+            $set_price = '不明';
             if($price){
                 if((int)($lowprice->Amount) < (int)($price->Amount)){
+                    $set_price = "{$price->FormattedPrice} ～ {$lowprice->FormattedPrice}";
                     $dd .= "{$price->FormattedPrice} ～ <span>{$lowprice->FormattedPrice}</span>";
                 }else{
+                    $set_price = "{$lowprice->FormattedPrice}";
                     $dd .= "<span>{$lowprice->FormattedPrice}</span>";
                 }
             }else{
@@ -400,11 +405,11 @@ if(!class_exists('PW_Amazon')){
             $cartadd .= '<input type="hidden" name="AWSAccessKeyId" value="' . $this->opt->get(libpw_Amazon_API::ACCESS_KEY) . '">';
             $cartadd .= '<input type="submit" name="add" alt="カートにいれる" class="submit" value="' . $reg['domain'] . '"></form>';
             $dd .= $cartadd;
-
+            
             $dd .= '</dd>';
 
             // 返却情報を作成
-            return "<dl class=\"amazon ad\">{$dt}{$dd}</dl>";
+            return "<dl class=\"amazon ad\" data-ad-kind=\"amazon\" data-ad-name=\"{$set_price}円:" . htmlspecialchars($name) . "\">{$dt}{$dd}</dl>";
         }
     }
 
