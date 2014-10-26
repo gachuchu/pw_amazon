@@ -288,6 +288,7 @@ if(!class_exists('PW_Amazon')){
                 //---------------------------------------------------------------------
                 // 本
             case 'Book':
+            case 'eBooks':
                 if($item_atr->Author){
                     $auth = (is_array($item_atr->Author) ? implode('&nbsp;', $item_atr->Author):$item_atr->Author);
                     $dd .= "<li>著者/訳者:{$auth}</li>";
@@ -389,7 +390,11 @@ if(!class_exists('PW_Amazon')){
                     $dd .= "<span>{$lowprice->FormattedPrice}</span>";
                 }
             }else{
-                $dd .= "<span>不明</span>(売り切れかも)";
+                if(strcmp($item_atr->Binding, 'Kindle版') == 0){
+                    $dd .= "<span>Kindle版は取得不可</span>";
+                }else{
+                    $dd .= "<span>不明</span>(売り切れかも)";
+                }
             }
             $dd .= '</li>';
             $dd .= '</ul>';
@@ -409,7 +414,12 @@ if(!class_exists('PW_Amazon')){
             $dd .= '</dd>';
 
             // 返却情報を作成
-            return "<dl class=\"amazon ad\" data-ad-kind=\"amazon\" data-ad-name=\"{$set_price}円:" . htmlspecialchars($name) . "\">{$dt}{$dd}</dl>";
+            if(true){
+                return "<dl class=\"amazon ad\" data-ad-kind=\"amazon\" data-ad-name=\"{$set_price}円:" . htmlspecialchars($name) . "\">{$dt}{$dd}</dl>";
+            }else{
+                return "<dl class=\"amazon ad\" data-ad-kind=\"amazon\" data-ad-name=\"" .
+                    mb_convert_encoding("{$set_price}円:" . htmlspecialchars($name), 'HTML-ENTITIES', 'UTF-8') . "\">{$dt}{$dd}</dl>";
+            }
         }
     }
 
